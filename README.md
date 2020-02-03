@@ -1,4 +1,4 @@
-# Deep-Learning-with-Piano
+# Deep Learning with Piano
 This is a project to explore possibilities of application of Deep Learning in piano music. 
 
 My final goal is generating piano music with style, composer parameters.
