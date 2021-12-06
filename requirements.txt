@@ -1,0 +1,6 @@
+python==3.7.5
+numpy==1.21.4
+matplotlib==3.5.0
+scipy==1.7.3
+miditok==1.1.5
+torch==1.10.0

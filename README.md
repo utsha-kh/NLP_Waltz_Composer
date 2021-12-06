@@ -1,19 +1,14 @@
-# Deep Learning with Piano
-This is a project to explore possibilities of application of Deep Learning in piano music. 
+# NLP waltz composition
+In this project, I used NLP techniques to generate new music resembling Chopin's waltz. 
+I used GRU(Gated Recurrent Unit)-RNN based model to model original waltz musics as a language modeling,
+then used the learned model to predict unseen music that inherits original styles.
 
-My final goal is generating piano music with style, composer parameters.
+# Acknowledgement
+I reffered some code for data preprocessing (e.g. creating dictionary mappings from data, function to get batch of data) from the repo https://github.com/AndySECP/Neural-Network-Music-Generation .
 
-(e.g. "Waltz" & "Chopin" -> Generate a waltz-style music which sounds like a Chopin's work).
+All the rest, including the model design, training, predictions, as well as tokenizing back and forth to MIDI format are my own work. 
 
-I am thinking to utilize DSP, neural style transfer, and GAN to achieve the goal.
+The MIDI data of Chopin's waltz musics are obtained from https://www.kunstderfuge.com/chopin.htm . I am not publishing any of this project as it 
+is used in a class project, and I respect all the copy rights.
 
-In this repo, I will keep updating my progress.
-
-# Abstract Idea
-
-First, I will start with Chopin's music only (my favorite composer).
-1. Import as many music as possible.
-2. Label each music's style, feelings, and other parameters.
-3. Cut each music into pieces and shuffle to increase training data size.
-4. Train GAN. 
-5. (to be continued)...
+In the future, I will play each Waltz by myself and record them to create my own MIDI dataset, which will be publishable.
