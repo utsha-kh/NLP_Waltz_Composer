@@ -4,7 +4,7 @@ I used GRU(Gated Recurrent Unit)-RNN based model to model original waltz musics 
 then used the learned model to predict unseen music that inherits original styles.
 
 # Acknowledgement
-I reffered some code for data preprocessing (e.g. creating dictionary mappings from data, function to get batch of data) from the repo https://github.com/AndySECP/Neural-Network-Music-Generation .
+I reffered very little code for data preprocessing (e.g. creating dictionary mappings from data, function to get batch of data) from the repo https://github.com/AndySECP/Neural-Network-Music-Generation .
 
 All the rest, including the model design, training, predictions, as well as tokenizing back and forth to MIDI format are my own work. 
 
