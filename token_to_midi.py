@@ -13,11 +13,11 @@ additional_tokens = {'Chord': True, 'Rest': True, 'Tempo': True, 'Program': Fals
 # Creates the tokenizer and loads a MIDI
 tokenizer = MIDILikeEncoding(pitch_range, beat_res, nb_velocities, additional_tokens)
 
-in_file = open("generated/generated-9.txt", 'r')
+in_file = open("data/waltz64-2.txt", 'r')
 content = in_file.read()
 tokens = [[int(content.split(' ')[i]) for i in range(len(content.split(' ')))]]
 
 midi = tokenizer.tokens_to_midi(tokens)
-midi.dump("generated/generated-9.mid")
+midi.dump("data/waltz64_2_r.mid")
 
 print("done!")

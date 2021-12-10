@@ -58,7 +58,7 @@ def main():
     args = parser.parse_args()
 
     ######### Load the tokenized MIDI file
-    waltz69_2 = 'data/waltz69-2.txt'
+    waltz69_2 = 'data/waltz64-69-2.txt'
 
     with open(waltz69_2, 'r') as file:
         text = file.read()
@@ -95,8 +95,13 @@ def main():
         path = args.load_path
         model = torch.load(path)
 
-        #initial_seed = [316, 224, 58, 191, 220, 146, 59, 191, 212, 147]
-        initial_seed = [60, 201, 212, 148, 59, 151, 62, 196, 216, 150, 53, 196, 212]
+        eval_val_accuracy(model, encoded, args, vocab_size)
+
+        initial_seed = [316, 224, 58, 191, 220, 146, 59, 191, 212, 147]
+        #initial_seed = [60, 201, 212, 148, 59, 151, 62, 196, 216, 150, 53, 196, 212]
+        #initial_seed = [36, 186, 212, 124, 43]
+        #initial_seed = [186, 212, 146, 56, 186, 212, 144]
+        #initial_seed = [198, 212, 146, 60, 199, 212]
         initial_seed_tensor = torch.tensor([word2int[str(initial_seed[i])] for i in range(len(initial_seed))]).cuda()
         prediction = model.predict(initial_seed_tensor, 512)
 
@@ -109,18 +114,6 @@ def main():
 
     if not args.save_dir:
         raise ValueError("Must provide a value for --save-dir if training.")
-
-    # try:
-    #     if os.path.exists(args.save_dir):
-    #         # save directory already exists, do we really want to overwrite?
-    #         input("Save directory {} already exists. Press <Enter> "
-    #               "to clear, overwrite and continue , or "
-    #               "<Ctrl-c> to abort.".format(args.save_dir))
-    #         shutil.rmtree(args.save_dir)
-    #     os.makedirs(args.save_dir)
-    # except KeyboardInterrupt:
-    #     print()
-    #     sys.exit(0)
 
     # define model
     model = WaltzComposer(sequence_length = args.sequence_length, 
@@ -146,9 +139,6 @@ def main():
     # split dataset into 90% train and 10% using index
     val_idx = int(len(encoded) * (1 - 0.1))
     train_data, val_data = encoded[:val_idx], encoded[val_idx:]
-
-    # empty list for the validation losses
-    val_losses = list()
 
     # finally train the model
     for epoch in range(args.num_epochs):
@@ -179,10 +169,14 @@ def main():
             # update the parameters of the model
             optimizer.step()
 
-        print("finished epoch: {}, LOSS: {:.2f}".format(epoch, torch.mean(torch.tensor(losses))))
-    
-    path = args.save_dir + f"model_{epoch}_{torch.mean(torch.tensor(losses)):.3f}" + ".pth"
+        print("finished epoch: {}, Training Loss: {:.2f}".format(epoch, torch.mean(torch.tensor(losses))))
+
+        if ((epoch+1) % 50 == 0):
+            eval_val_accuracy(model, encoded, args, vocab_size)
+
+    path = args.save_dir + f"model_{epoch+1}_{torch.mean(torch.tensor(losses)):.3f}" + ".pth"
     torch.save(model, path)
+
 
 def get_batches(data, batch_size, n_words):
     """
@@ -224,6 +218,40 @@ def get_batches(data, batch_size, n_words):
         
         # yield function is like return, but creates a generator object
         yield x, y   
+
+def eval_val_accuracy(model, encoded, args, vocab_size):
+    val_idx = int(len(encoded) * (1 - 0.1))
+    train_data, val_data = encoded[:val_idx], encoded[val_idx:]
+
+    correct = 0
+    incorrect = 0
+    # empty list for the validation losses
+    val_losses = list()
+    for i, (x, y) in enumerate(get_batches(val_data, 1, args.sequence_length)):
+                            
+        # (batch_size, sequence_length)
+        x_val = x.cuda()
+        targets = y.cuda()
+
+        predictions, logits = model.predict_best(x_val)
+
+        logits.view(1, args.sequence_length, -1)
+
+        loss = nn.functional.cross_entropy(logits.view(-1, vocab_size), targets.view(-1))
+        val_losses.append(loss.item())
+
+        for i in range(args.sequence_length):
+            if predictions[i] == targets[0][i]:
+                correct += 1
+            else:
+                incorrect += 1
+
+    accuracy = correct/(correct+incorrect)
+    print("Validation Accuracy: {:.3f}".format(accuracy))
+    print("Validation Loss:     {:.3f}".format(torch.mean(torch.tensor(val_losses))))
+    return accuracy
+
+    
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s - %(levelname)s "

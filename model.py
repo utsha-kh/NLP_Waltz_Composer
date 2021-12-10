@@ -52,6 +52,7 @@ class WaltzComposer(nn.Module):
         return output_logits
 
     # input data: length N sequence
+    # Used to generate new sequence
     def predict(self, init_sequence, target_length):
 
         self.eval()
@@ -72,32 +73,48 @@ class WaltzComposer(nn.Module):
         # vessel to fill with predictions
         outputs = []
         for i in range(target_length - N):
+            # predict next token probabilities
             output, hidden = self.RNN(output, hidden)
             output_logits = self.ReLU(self.fc(output)).squeeze(1)
             softmax_output = F.softmax(output_logits, dim=1)
-            # output = torch.argmax(softmax_output)
-            # outputs.append(output.item())
-            # output = self.embedding(output).unsqueeze(0).unsqueeze(0)
 
-            p, top_word = softmax_output.topk(5)
+            p, top_word = softmax_output.topk(2)
 
             # sample from top k words to get next word
             p = p.detach().squeeze().cpu().numpy()
             top_word = torch.squeeze(top_word)
             
-            output = np.random.choice(top_word.cpu(), p = p/p.sum())
+            output = np.random.choice(top_word.cpu(), p = [0.7, 0.3]) #, p = p/p.sum())
 
+            # store resulting prediction
             outputs.append(output.item())
-            output = self.embedding(torch.tensor(output).cuda()).unsqueeze(0).unsqueeze(0)
 
+            # get embedding of predicted token to pass into RNN in next step
+            output = self.embedding(torch.tensor(output).cuda()).unsqueeze(0).unsqueeze(0)
 
         return outputs
 
+    # returns predictions with highest logit. Used for model evalutaion
+    def predict_best(self, data_batch):
 
-        # p, top_word = softmax_output.topk(5)
+        self.eval()
 
-        #     # sample from top k words to get next word
-        #     p = p.detach().squeeze().cpu().numpy()
-        #     top_word = torch.squeeze(top_word)
-            
-        #     word = np.random.choice(top_word.cpu(), p = p/p.sum())
+       # (batch_size, sequence_length, embedding_dim)
+        embedded_batch = self.embedding(data_batch)
+
+        # vessel to fill with predictions
+        output_logits = torch.empty((1, self.sequence_length, self.vocab_size)).cuda()
+        outputs = []
+
+        # Compute output logits one-by-one
+        hidden = None
+        for i in range(self.sequence_length):
+            output, hidden = self.RNN(embedded_batch[:, i, :].unsqueeze(1), hidden)
+            output_logit = self.ReLU(self.fc(output)).squeeze(1)
+            output_logits[:, i, :] = output_logit
+            softmax_output = F.softmax(output_logit, dim=1)
+            outputs.append(torch.argmax(softmax_output, dim=1).item())
+
+        self.train()
+
+        return outputs, output_logits

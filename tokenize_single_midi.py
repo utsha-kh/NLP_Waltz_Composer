@@ -13,20 +13,20 @@ additional_tokens = {'Chord': True, 'Rest': True, 'Tempo': True, 'Program': Fals
 # Creates the tokenizer and loads a MIDI
 #tokenizer = REMIEncoding(pitch_range, beat_res, nb_velocities, additional_tokens)
 tokenizer = MIDILikeEncoding(pitch_range, beat_res, nb_velocities, additional_tokens)
-midi = MidiFile('data/waltz69-2.mid')
+midi = MidiFile('data/waltz64-2.mid')
 
 # Converts MIDI to tokens, and back to a MIDI
 # write out only right hand midi
 tokens = tokenizer.midi_to_tokens(midi)
 
 # tokens[0]  is sequence corresponding to the right hand 
-with open("data/waltz69-2.txt", "w") as outfile:
+with open("data/waltz64-2.txt", "w") as outfile:
     outfile.write(' '.join(str(tokens[0][i]) for i in range(0, len(tokens[0]))))
 
-# tokens[1] = []
+tokens[1] = []
 
-# converted_back_midi = tokenizer.tokens_to_midi(tokens)#, get_midi_programs(midi))
-# #converted_back_midi.dump('out_l.mid')
+converted_back_midi = tokenizer.tokens_to_midi(tokens)#, get_midi_programs(midi))
+converted_back_midi.dump('data/waltz64_2_r.mid')
 
 # # Converts just a selected track
 # tokenizer.current_midi_metadata = {'time_division': midi.ticks_per_beat, 'tempo_changes': midi.tempo_changes}
