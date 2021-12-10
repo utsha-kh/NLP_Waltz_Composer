@@ -34,7 +34,7 @@ def main():
     
     parser.add_argument("--sequence-length", type=int, default=256,
                         help="Length of each music sequence")
-    parser.add_argument("--embedding-dim", type=int, default=50,
+    parser.add_argument("--embedding-dim", type=int, default=100,
                         help="Dimension of Embeddings")
     parser.add_argument("--batch-size", type=int, default=4,
                         help="Batch size to use in training and evaluation.")
@@ -42,11 +42,11 @@ def main():
                         help="Hidden size to use in RNN and Attention models.")
     parser.add_argument("--num-layers", type=int, default=4,
                         help="Number of Layers of GRU units in RNN-base models.")
-    parser.add_argument("--num-epochs", type=int, default=1000,
+    parser.add_argument("--num-epochs", type=int, default=100,
                         help="Number of epochs to train for.")
     parser.add_argument("--dropout", type=float, default=0.2,
                         help="Dropout proportion.")
-    parser.add_argument("--lr", type=float, default=0.0001,
+    parser.add_argument("--lr", type=float, default=0.001,
                         help="The learning rate to use.")
 
     
