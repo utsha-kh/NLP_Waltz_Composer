@@ -5,7 +5,13 @@ then used the learned model to predict unseen music that inherits original style
 
 ## Installation
 Create a virtual environment with python3.7.5. Then install requirements by "pip install -r requirements.txt".
-Currently my code only works with CUDA, but it should be easy to adopt to CPU version (it was not my priority to support CPU...I basically had a week...)
+Currently my code requires CUDA.
+
+  virtualenv nlpwaltz -p 3.7.5
+  
+  source activate ./nlpwaltz/bin/activate
+  
+  pip install -r requirements.txt
 
 ## Acknowledgement
 I reffered very little code for data preprocessing (e.g. creating dictionary mappings from data, function to get batch of data) from the repo https://github.com/AndySECP/Neural-Network-Music-Generation .
