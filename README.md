@@ -1,3 +1,5 @@
+Report : https://drive.google.com/file/d/1tfRfTzL1BfiBcc-aXIo7h4JTo3q8DsS6/view?usp=sharing
+
 # NLP waltz composition
 In this project, I used NLP techniques to generate new music resembling Chopin's waltz. 
 I used GRU(Gated Recurrent Unit)-RNN based model to model original waltz musics as a language modeling,
